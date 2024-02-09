@@ -1,0 +1,74 @@
+cabal-version: 2.2
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           xo
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/hovanja2011/xo#readme>
+homepage:       https://github.com/hovanja2011/xo#readme
+bug-reports:    https://github.com/hovanja2011/xo/issues
+author:         Ann Hovanskaya
+maintainer:     hovanja2011@gmail.com
+copyright:      2024 Ann Hovanskaya
+license:        BSD-3-Clause
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/hovanja2011/xo
+
+library
+  exposed-modules:
+      Logic
+      Render
+  other-modules:
+      Paths_xo
+  autogen-modules:
+      Paths_xo
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+    , scotty
+    , text
+  default-language: Haskell2010
+
+executable xo-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_xo
+  autogen-modules:
+      Paths_xo
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , scotty
+    , text
+    , xo
+  default-language: Haskell2010
+
+test-suite xo-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_xo
+  autogen-modules:
+      Paths_xo
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , scotty
+    , text
+    , xo
+  default-language: Haskell2010

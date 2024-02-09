@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        tr,
+        td {
+            border: 1px solid grey;
+            width: 80px;
+           height: 80px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body> 
+<h1>O 's turn.</h1>
+<h1>Pick a cell from A1 to C3.</h1>
+<table><tr><td> </td><td>1</td><td>2</td><td>3</td></tr><tr><td>A</td><td> </td><td>X</td><td> </td></tr><tr><td>B</td><td> </td><td> </td><td> </td></tr><tr><td>C</td><td> </td><td> </td><td> </td></tr></table>
+    <h2 class="step">Write your step: </h2>
+    <form class="myForm" method="POST" action="/">
+        <input name="cell">
+        <button>Send</button>
+    </form>
+</html>
