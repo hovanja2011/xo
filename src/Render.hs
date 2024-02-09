@@ -6,6 +6,10 @@ module Render(module Render) where
     toTable :: [[String]] -> String
     toTable = insideTag "table" . concatMap (insideTag "tr") . map (concatMap (insideTag "td" . id))
 
+
+    stringToInt :: String -> Int
+    stringToInt s = read s 
+
     oneToTwo :: Show a => [a] -> Int -> [[String]]
     oneToTwo cells n = map (\xs -> map show xs) [[cells !! (j*n+i) | i <- [0..n-1]] | j <- [0..n-1]]    
 
@@ -29,7 +33,7 @@ module Render(module Render) where
         header,
         (insideTag "h1" $ move ++ " 's turn."), 
         (insideTag "h1" $ "Pick a cell from A1 to " ++ (getRowName n) !! n ++ (show n)++"."),
-        toTable $ boardToTable board n,
+        toTable (boardToTable board n),
         footer
         ]
 
