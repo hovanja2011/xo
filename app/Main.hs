@@ -1,7 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Main where
-
 import Web.Scotty
 import Logic
 import Render
@@ -22,26 +20,26 @@ main = do
     get "/" $
       file "xoGame.html"
     post "/" $ do
-      location <- param ("cell" )
+      location <- formParam ("cell" )
       move <- liftIO $ readIORef moveIO
-      board <- liftIO $ readIORef boardIO
-      case assignCell location move board n of
+      board1 <- liftIO $ readIORef boardIO
+      case assignCell location move board1 n of
         Fail err _ -> do
-          board <- liftIO $ readIORef boardIO
-          liftIO . writeFile "xoGame.html" $ failing (show move) err board n
+          board2 <- liftIO $ readIORef boardIO
+          liftIO . writeFile "xoGame.html" $ failing (show move) err board2 n
           redirect "/" 
         Success newBoard -> do
           liftIO $ modifyIORef boardIO $ (\_ -> newBoard)
           case isThereAWinner move (oneToTwo newBoard n) n of
             True -> do
-              board <- liftIO $ readIORef boardIO
+              -- board3 <- liftIO $ readIORef boardIO
               liftIO . writeFile "xoGame.html" $ winning (show move) newBoard n
               redirect "/finish" 
             False -> do
               liftIO $ modifyIORef moveIO $ nextMove
-              move <- liftIO $ readIORef moveIO
-              board <- liftIO $ readIORef boardIO
-              liftIO . writeFile "xoGame.html" $ invitation (show move) board n
+              move1 <- liftIO $ readIORef moveIO
+              board3 <- liftIO $ readIORef boardIO
+              liftIO . writeFile "xoGame.html" $ invitation (show move1) board3 n
               redirect "/" 
     get "/finish" $
       file "xoGame.html"
