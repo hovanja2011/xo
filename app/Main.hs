@@ -1,6 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# language DeriveAnyClass #-}
-{-# language LambdaCase #-}
 module Main (main) where
 
 import Web.Scotty
@@ -42,7 +40,7 @@ main = do
           redirect "/" 
         Success newBoard -> do
           liftIO $ modifyMVar_ m $ \( shape, _, _) -> return (shape, move, newBoard)
-          case isThereAWinner move (oneToTwo newBoard n) n of
+          case isThereAWinner move (arrayToTable newBoard n) n of
             True -> do
               liftIO . writeFile "xoGame.html" $ winning (show move) newBoard n
               redirect "/finish" 
@@ -50,7 +48,8 @@ main = do
               liftIO $ modifyMVar_ m $ \( shape, _, _) -> return (shape, nextMove move, newBoard)
               liftIO . writeFile "xoGame.html" $ invitation (show $ nextMove move) newBoard n
               redirect "/" 
+
     get "/finish" $
       file "xoGame.html"
 
-    
+  
