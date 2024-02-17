@@ -26,7 +26,7 @@ module Render(module Render) where
     boardToTable board n = [getColName n] ++ [ ((getRowName n)  !! j ) : [ show(board !! (j*n-n + k)) | k <- [0 .. n-1] ]| j <- [1..n]]
 
     greeting :: String
-    greeting = header ++ (unlines [(insideTag "h1" "The game is beginning. "), (insideTag "h1" "Board size n = ")]) ++ footer
+    greeting = header ++ (unlines [(insideTag "h1" "The game is beginning. ")]) ++ footer0
 
     invitation :: Show a => String -> [a] -> Int -> String
     invitation move board n = unlines [

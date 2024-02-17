@@ -1,45 +1,53 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# language DeriveAnyClass #-}
+{-# language LambdaCase #-}
+module Main (main) where
 
 import Web.Scotty
+
+import Control.Concurrent.MVar
+import Control.Monad.IO.Class
+
+import Network.Wai.Middleware.RequestLogger
+
 import Logic
 import Render
-import Control.Monad.IO.Class (liftIO) 
-import Data.IORef (modifyIORef, newIORef, readIORef)
 
 main :: IO ()
 main = do
-  writeFile "xoGame.html" greeting
-  putStrLn "Shape of board n = "
-  ns <- getLine 
-  let n = read ns :: Int
-  moveIO <- newIORef (X :: Move)
-  boardIO <- newIORef (replicate (n*n) Empty :: [Cell])
-  board <- liftIO $ readIORef boardIO
-  writeFile "xoGame.html" $ invitation "X" board n
+  m <- newMVar (3 :: Int, X :: Move, [] :: [Cell])
   scotty 3000 $ do
+    middleware logStdoutDev
+    get "/start" $
+      file "xoStart.html" 
+
+    post "/start" $ do
+      shapeS <- formParam ("shape") 
+      let shape = stringToInt shapeS
+      liftIO $ modifyMVar_ m $ \( _, _, _) -> return (stringToInt shapeS, X, replicate (shape * shape) Empty)
+      (n, move, board) <- liftIO $ readMVar m
+      liftIO $ writeFile "xoGame.html" $ invitation (show move) board n
+      redirect "/" 
+
     get "/" $
-      file "xoGame.html"
+      file "xoGame.html"  
+
     post "/" $ do
       location <- formParam ("cell" )
-      move <- liftIO $ readIORef moveIO
-      board1 <- liftIO $ readIORef boardIO
-      case assignCell location move board1 n of
+      (n, move, board) <- liftIO $ readMVar m
+      case assignCell location move board n of
         Fail err _ -> do
-          board2 <- liftIO $ readIORef boardIO
-          liftIO . writeFile "xoGame.html" $ failing (show move) err board2 n
+          liftIO . writeFile "xoGame.html" $ failing (show move) err board n
           redirect "/" 
         Success newBoard -> do
-          liftIO $ modifyIORef boardIO $ (\_ -> newBoard)
+          liftIO $ modifyMVar_ m $ \( shape, move, _) -> return (shape, move, newBoard)
           case isThereAWinner move (oneToTwo newBoard n) n of
             True -> do
-              -- board3 <- liftIO $ readIORef boardIO
               liftIO . writeFile "xoGame.html" $ winning (show move) newBoard n
               redirect "/finish" 
             False -> do
-              liftIO $ modifyIORef moveIO $ nextMove
-              move1 <- liftIO $ readIORef moveIO
-              board3 <- liftIO $ readIORef boardIO
-              liftIO . writeFile "xoGame.html" $ invitation (show move1) board3 n
+              liftIO $ modifyMVar_ m $ \( shape, move, _) -> return (shape, nextMove move, newBoard)
+              liftIO . writeFile "xoGame.html" $ invitation (show $ nextMove move) newBoard n
               redirect "/" 
     get "/finish" $
       file "xoGame.html"

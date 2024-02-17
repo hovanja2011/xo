@@ -38,6 +38,7 @@ library
       base >=4.7 && <5
     , scotty
     , text
+    , wai-extra
   default-language: Haskell2010
 
 executable xo-exe
@@ -53,6 +54,7 @@ executable xo-exe
       base >=4.7 && <5
     , scotty
     , text
+    , wai-extra
     , xo
   default-language: Haskell2010
 
@@ -70,5 +72,6 @@ test-suite xo-test
       base >=4.7 && <5
     , scotty
     , text
+    , wai-extra
     , xo
   default-language: Haskell2010
