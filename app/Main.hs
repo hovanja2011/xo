@@ -7,7 +7,7 @@ import Web.Scotty
 
 import Control.Concurrent.MVar
 import Control.Monad.IO.Class
-
+import Data.Char(toUpper)
 import Network.Wai.Middleware.RequestLogger
 
 import Logic
@@ -34,19 +34,20 @@ main = do
 
     post "/" $ do
       location <- formParam ("cell" )
+      let loc = map toUpper location
       (n, move, board) <- liftIO $ readMVar m
-      case assignCell location move board n of
+      case assignCell loc move board n of
         Fail err _ -> do
           liftIO . writeFile "xoGame.html" $ failing (show move) err board n
           redirect "/" 
         Success newBoard -> do
-          liftIO $ modifyMVar_ m $ \( shape, move, _) -> return (shape, move, newBoard)
+          liftIO $ modifyMVar_ m $ \( shape, _, _) -> return (shape, move, newBoard)
           case isThereAWinner move (oneToTwo newBoard n) n of
             True -> do
               liftIO . writeFile "xoGame.html" $ winning (show move) newBoard n
               redirect "/finish" 
             False -> do
-              liftIO $ modifyMVar_ m $ \( shape, move, _) -> return (shape, nextMove move, newBoard)
+              liftIO $ modifyMVar_ m $ \( shape, _, _) -> return (shape, nextMove move, newBoard)
               liftIO . writeFile "xoGame.html" $ invitation (show $ nextMove move) newBoard n
               redirect "/" 
     get "/finish" $
